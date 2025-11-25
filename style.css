@@ -1,0 +1,348 @@
+/* --- VARIABLES & RESET (Black & White Theme) --- */
+:root {
+    --primary-color: #000000; /* Black Accent */
+    --bg-color: #ffffff;      /* Pure White Background */
+    --bg-light: #f8f9fa;      /* Very Light Gray for cards/sections */
+    --text-color: #555555;    /* Dark Gray for body text */
+    --heading-color: #111111; /* Almost Black for headings */
+    --white: #ffffff;
+    --font-main: 'Poppins', sans-serif;
+    --nav-height: 70px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding-top: var(--nav-height); /* Prevent content hiding behind nav */
+}
+
+a { text-decoration: none; color: inherit; transition: 0.3s; }
+ul { list-style: none; }
+
+/* --- NAVIGATION BAR --- */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--nav-height);
+    background-color: rgba(255, 255, 255, 0.95); /* White with transparency */
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Lighter shadow */
+    backdrop-filter: blur(10px);
+}
+
+.nav-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+.logo span { color: var(--text-color); }
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.menu-btn {
+    display: none;
+    color: var(--heading-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* --- LAYOUT UTILITIES --- */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    min-height: calc(100vh - var(--nav-height) - 60px); /* Fill screen minus nav & footer */
+}
+
+.page-title {
+    font-size: 2rem;
+    color: var(--heading-color);
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--primary-color);
+    display: inline-block;
+    padding-bottom: 0.5rem;
+}
+
+/* --- HERO SECTION (Home Only) --- */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - var(--nav-height));
+    text-align: left;
+}
+
+.hero-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 2rem;
+}
+
+.hero-text h3 { color: var(--text-color); font-size: 1.2rem; font-weight: 500; }
+.hero-text h1 { color: var(--heading-color); font-size: 3.5rem; font-weight: 700; margin: 0.5rem 0; }
+.hero-text h2 { color: var(--text-color); font-size: 2.5rem; margin-bottom: 1.5rem; }
+.hero-text p { max-width: 500px; margin-bottom: 2rem; color: var(--text-color); }
+
+.hero-img img {
+    width: 280px;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--primary-color); /* Black border */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Subtle black shadow */
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    border-radius: 5px;
+    font-weight: 600;
+    margin-right: 1rem;
+    transition: 0.3s;
+}
+.btn:hover { 
+    background-color: var(--primary-color); 
+    color: var(--white);
+}
+
+/* --- CARDS & GRIDS (Skills, Projects) --- */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.card {
+    background: var(--bg-light); /* Light Gray */
+    padding: 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    border: 1px solid #e0e0e0; /* Subtle border */
+}
+.card:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.card h3 { color: var(--heading-color); margin-bottom: 0.5rem; margin-top: 0; }
+.card i { font-size: 2rem; color: var(--heading-color); margin-bottom: 1rem; }
+.card-tags { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.card-tags span { 
+    font-size: 0.75rem; 
+    color: var(--white); 
+    background-color: var(--heading-color); /* Black tag bg */
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: monospace; 
+}
+
+/* Updated link color for light theme visibility */
+.card-link { 
+    display: inline-block; 
+    margin-top: 1rem; 
+    font-weight: bold; 
+    color: var(--primary-color); 
+    border-bottom: 1px solid transparent;
+}
+.card-link:hover {
+    border-bottom: 1px solid var(--primary-color);
+}
+
+/* --- TIMELINE (Experience, Education) --- */
+.timeline-item {
+    border-left: 2px solid var(--primary-color);
+    padding-left: 1.5rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -9px;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    background: var(--bg-color); /* White center */
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+}
+.timeline-date { font-size: 0.9rem; color: var(--text-color); font-weight: 600; margin-bottom: 0.5rem; display: block; }
+
+/* --- CONTACT FORM & LIST --- */
+.contact-list a {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: var(--heading-color);
+}
+.contact-list i { margin-right: 1rem; color: var(--primary-color); }
+.contact-list a:hover { color: #666; }
+
+/* --- FOOTER --- */
+footer {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    background-color: var(--bg-light);
+    border-top: 1px solid #eee;
+}
+
+/* --- RESPONSIVE / MOBILE --- */
+@media (max-width: 768px) {
+    .menu-btn { display: block; }
+    
+    .nav-links {
+        position: fixed;
+        top: var(--nav-height);
+        right: -100%;
+        background-color: var(--white);
+        height: calc(100vh - var(--nav-height));
+        width: 80%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: 0.4s ease;
+        box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+        border-left: 1px solid #eee;
+    }
+    
+    .nav-links.active { right: 0; }
+
+    .hero-wrapper {
+        flex-direction: column-reverse;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .hero-text h1 { font-size: 2.5rem; }
+    .hero-text h2 { font-size: 1.5rem; }
+    .hero-img img { width: 200px; height: 200px; margin-bottom: 2rem; }
+    
+    .container { padding: 1.5rem 1rem; }
+}
+/* Card container: make full-height layout with buttons at the bottom */
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* pushes buttons to bottom */
+    height: 100%; /* let the card fill its grid cell */
+}
+
+/* Card Images */
+.card-img {
+    width: 100%;
+    height: 180px;       
+    object-fit: cover;  
+    border-radius: 5px; 
+    margin-bottom: 12px; 
+    background-color: #eee;
+}
+
+/* Buttons container */
+.card-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+/* General Card Links */
+.card-buttons .card-link {
+    flex: 1;
+    text-align: center;
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: #f2f2f2;        
+    color: #333;                
+    font-weight: 500;
+    border: 1px solid #ddd;     
+    transition: all 0.25s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;                  
+}
+
+/* Hover effect */
+.card-buttons .card-link:hover {
+    background: #e6e6e6;       
+    border-color: #ccc;
+}
+
+/* Live Demo button (slightly darker for emphasis) */
+.card-buttons .live-demo {
+    background: #e0e0e0;        
+    color: #222;
+    border-color: #c9c9c9;
+}
+
+.card-buttons .live-demo:hover {
+    background: #d5d5d5;
+    border-color: #bdbdbd;
+}
+
+
+
+/* Make cards use flex properly for list spacing */
+.card {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Reduce space below headings */
+.card h3 {
+    margin-bottom: 4px; /* small gap between heading and first bullet */
+}
+
+/* Let the list shrink in flex layout */
+.card ul {
+    margin: 0;
+    padding-left: 20px; /* keep bullets indented */
+    flex-shrink: 0;     /* prevents list from stretching weirdly */
+    list-style-type: disc;
+}
+
+/* Tighten spacing between list items */
+.card ul li {
+    margin: 2px 0;
+}
