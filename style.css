@@ -8,6 +8,7 @@
     --white: #ffffff;
     --font-main: 'Poppins', sans-serif;
     --nav-height: 70px;
+    
 }
 
 * {
@@ -375,3 +376,5 @@ footer {
 .card ul li {
     margin: 2px 0;
 }
+
+i { color: #000000 !important; }
