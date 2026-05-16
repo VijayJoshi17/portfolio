@@ -8,8 +8,7 @@ registerSection('contact', `
         <a href="https://www.datascienceportfol.io/VijayJoshi" target="_blank" rel="noopener noreferrer"><i class="fas fa-chart-bar"></i> Data Science Portfolio</a>
     </div>
     <form class="contact-form" id="contactForm">
-        <h3 class="form-heading">Send a message</h3>
-        <div class="form-row">
+        <h3 class="form-heading">Send a message (Frontend only - mail service not connected)</h3>        <div class="form-row">
             <input type="text" placeholder="Name" name="name" required>
             <input type="email" placeholder="Email" name="email" required>
         </div>
