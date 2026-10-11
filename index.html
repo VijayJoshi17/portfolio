@@ -34,6 +34,17 @@
 
     <!-- Main Content -->
     <main class="main">
+        <aside class="blog-announcement" id="blogAnnouncement" aria-label="Latest blog announcement" role="status" aria-live="polite" hidden>
+            <span class="blog-announcement-icon" aria-hidden="true"><i class="fas fa-pen-nib"></i></span>
+            <div class="blog-announcement-content">
+                <p class="blog-announcement-label">New blog published</p>
+                <a class="blog-announcement-title" data-route="" href="./blogs">Read the latest article</a>
+            </div>
+            <time class="blog-announcement-date" id="blogAnnouncementDate"></time>
+            <button class="blog-announcement-close" id="blogAnnouncementClose" type="button" aria-label="Dismiss new blog announcement" title="Dismiss announcement">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </aside>
         <section id="about"></section>
         <div class="divider"></div>
         <section id="experience"></section>

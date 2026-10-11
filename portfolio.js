@@ -20,6 +20,17 @@ function init() {
     const routeIds = sections.map(section => section.id).filter(id => id !== 'not-found');
     const blogPosts = window.blogPosts || [];
     const blogRoute = route => /^blogs\/[a-z0-9-]+$/.test(route) && blogPosts.some(post => `blogs/${post.slug}` === route);
+    const announcementDismissalKey = 'dismissedBlogAnnouncement';
+    const announcementClose = document.getElementById('blogAnnouncementClose');
+    if (announcementClose) {
+        announcementClose.addEventListener('click', () => {
+            const announcement = document.getElementById('blogAnnouncement');
+            const latestPost = [...blogPosts].sort((first, second) => second.date.localeCompare(first.date))[0];
+            if (!announcement || !latestPost) return;
+            localStorage.setItem(announcementDismissalKey, latestPost.slug);
+            announcement.hidden = true;
+        });
+    }
     const redirectRoute = new URLSearchParams(window.location.search).get('__route');
     const initialPath = window.location.pathname.replace(/\/+$/, '');
     let basePath;
@@ -89,6 +100,23 @@ function init() {
         document.querySelectorAll('.main > .divider').forEach(divider => {
             divider.hidden = page !== 'home';
         });
+
+        const announcement = document.getElementById('blogAnnouncement');
+        const latestPost = [...blogPosts].sort((first, second) => second.date.localeCompare(first.date))[0];
+        if (announcement) {
+            announcement.hidden = page !== 'home' || !latestPost
+                || localStorage.getItem(announcementDismissalKey) === latestPost.slug;
+            if (latestPost) {
+                const route = `blogs/${latestPost.slug}`;
+                const link = announcement.querySelector('.blog-announcement-title');
+                const date = announcement.querySelector('.blog-announcement-date');
+                link.dataset.route = route;
+                link.href = `${basePath}/${route}`;
+                link.textContent = latestPost.title;
+                date.dateTime = latestPost.date;
+                date.textContent = latestPost.date;
+            }
+        }
 
         const blogPost = page.startsWith('blogs/') ? blogPosts.find(post => `blogs/${post.slug}` === page) : null;
         const pageTitle = blogPost

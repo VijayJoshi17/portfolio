@@ -306,6 +306,91 @@ strong { color: var(--text-heading); font-weight: 600; }
 }
 
 /* --- Blogs --- */
+.blog-announcement {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 2rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+}
+
+.blog-announcement-icon {
+    display: grid;
+    flex: 0 0 36px;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    background: var(--bg-hover);
+    color: var(--accent);
+}
+
+.blog-announcement-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.blog-announcement-label {
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.blog-announcement-title {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--text-heading);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.blog-announcement-title:hover,
+.blog-announcement-title:focus-visible {
+    color: var(--accent);
+}
+
+.blog-announcement-title:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.blog-announcement-date {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+}
+
+.blog-announcement-close {
+    display: grid;
+    flex: 0 0 30px;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.blog-announcement-close:hover {
+    background: var(--bg-hover);
+    color: var(--text-heading);
+}
+
+.blog-announcement-close:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 .blog-excerpt {
     color: var(--text-muted) !important;
     margin-bottom: 0.8rem;
@@ -825,6 +910,8 @@ strong { color: var(--text-heading); font-weight: 600; }
 /* --- Responsive --- */
 @media (max-width: 640px) {
     .main { padding: 2rem 1.5rem; }
+    .blog-announcement { align-items: flex-start; gap: 0.65rem; padding: 0.75rem; }
+    .blog-announcement-date { display: none; }
     .entry { grid-template-columns: 1fr; gap: 0.3rem; }
     .entry-date { font-size: 0.78rem; }
     .skill-row { grid-template-columns: 1fr; gap: 0.4rem; }
