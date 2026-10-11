@@ -19,13 +19,15 @@
     <!-- Sidebar Nav -->
     <aside class="sidebar">
         <nav class="sidebar-nav">
-            <a href="#about" data-tooltip="About"><i class="fas fa-user"></i></a>
-            <a href="#experience" data-tooltip="Experience"><i class="fas fa-briefcase"></i></a>
-            <a href="#education" data-tooltip="Education"><i class="fas fa-graduation-cap"></i></a>
-            <a href="#skills" data-tooltip="Skills"><i class="fas fa-code"></i></a>
-            <a href="#projects" data-tooltip="Projects"><i class="fas fa-folder"></i></a>
-            <a href="#achievements" data-tooltip="Achievements"><i class="fas fa-trophy"></i></a>
-            <a href="#contact" data-tooltip="Contact"><i class="fas fa-envelope"></i></a>
+            <a href="./" data-route="home" data-tooltip="Home" aria-label="Home"><i class="fas fa-house"></i></a>
+            <a href="./about" data-route="about" data-tooltip="About" aria-label="About"><i class="fas fa-user"></i></a>
+            <a href="./experience" data-route="experience" data-tooltip="Experience" aria-label="Experience"><i class="fas fa-briefcase"></i></a>
+            <a href="./education" data-route="education" data-tooltip="Education" aria-label="Education"><i class="fas fa-graduation-cap"></i></a>
+            <a href="./skills" data-route="skills" data-tooltip="Skills" aria-label="Skills"><i class="fas fa-code"></i></a>
+            <a href="./projects" data-route="projects" data-tooltip="Projects" aria-label="Projects"><i class="fas fa-folder"></i></a>
+            <a href="./achievements" data-route="achievements" data-tooltip="Achievements" aria-label="Achievements"><i class="fas fa-trophy"></i></a>
+            <a href="./blogs" data-route="blogs" data-tooltip="Blogs" aria-label="Blogs"><i class="fas fa-book-open"></i></a>
+            <a href="./contact" data-route="contact" data-tooltip="Contact" aria-label="Contact"><i class="fas fa-envelope"></i></a>
         </nav>
         <button class="theme-btn" id="themeBtn" title="Toggle theme"><i class="fas fa-moon"></i></button>
     </aside>
@@ -42,10 +44,16 @@
         <div class="divider"></div>
         <section id="projects"></section>
         <div class="divider"></div>
+        <section id="blogs"></section>
+        <div class="divider"></div>
         <section id="achievements"></section>
         <div class="divider"></div>
         <section id="contact"></section>
-        <footer class="footer">© 2025 Vijay Joshi</footer>
+        <section id="not-found" class="route-not-found">
+            <h1>Page not found</h1>
+            <p><a href="./" data-route="home">Return to the portfolio</a></p>
+        </section>
+        <footer class="footer">© 2026 Vijay Joshi</footer>
     </main>
 
     <!-- Section registry: must come before section scripts -->
@@ -62,6 +70,7 @@
     <script src="sections/education.js"></script>
     <script src="sections/skills.js"></script>
     <script src="sections/projects.js"></script>
+    <script src="sections/blogs.js"></script>
     <script src="sections/achievements.js"></script>
     <script src="sections/contact.js"></script>
 

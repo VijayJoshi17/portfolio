@@ -146,6 +146,10 @@ strong { color: var(--text-heading); font-weight: 600; }
     max-width: var(--max-width);
 }
 
+[hidden] {
+    display: none !important;
+}
+
 /* --- Profile --- */
 .profile {
     display: flex;
@@ -298,6 +302,26 @@ strong { color: var(--text-heading); font-weight: 600; }
 
 .entry-links a:hover {
     opacity: 0.7;
+}
+
+/* --- Blogs --- */
+.blog-excerpt {
+    color: var(--text-muted) !important;
+    margin-bottom: 0.8rem;
+}
+
+.blog-empty {
+    color: var(--text-muted);
+}
+
+.route-not-found h1 {
+    color: var(--text-heading);
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.route-not-found a {
+    color: var(--accent);
 }
 
 /* --- Skills --- */
