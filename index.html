@@ -56,6 +56,33 @@
         <footer class="footer">© 2026 Vijay Joshi</footer>
     </main>
 
+    <button class="faq-launcher" id="faqLauncher" type="button" aria-label="Open portfolio FAQ" aria-controls="faqPanel" aria-expanded="false" title="Portfolio FAQ">
+        <i class="fas fa-comment-dots" aria-hidden="true"></i>
+    </button>
+
+    <aside class="faq-panel" id="faqPanel" role="dialog" aria-labelledby="faqTitle" hidden>
+        <header class="faq-header">
+            <div>
+                <h2 id="faqTitle">Portfolio FAQ</h2>
+                <p>Vijay Joshi · AI Engineer</p>
+            </div>
+            <button class="faq-close" id="faqClose" type="button" aria-label="Close portfolio FAQ" title="Close">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </header>
+        <div class="faq-conversation" id="faqConversation" role="log" aria-live="polite" aria-relevant="additions">
+            <p class="faq-message faq-assistant-message">Hi! What would you like to know about Vijay's work?</p>
+            <div class="faq-suggestions" id="faqSuggestions"></div>
+        </div>
+        <form class="faq-form" id="faqForm">
+            <label class="faq-sr-only" for="faqInput">Ask a question</label>
+            <input id="faqInput" name="question" type="text" placeholder="Ask a question..." autocomplete="off" maxlength="240" required>
+            <button type="submit" aria-label="Send question" title="Send question">
+                <i class="fas fa-arrow-up" aria-hidden="true"></i>
+            </button>
+        </form>
+    </aside>
+
     <!-- Section registry: must come before section scripts -->
     <script>
         function registerSection(id, html) {
@@ -76,5 +103,6 @@
 
     <!-- Main app logic -->
     <script src="portfolio.js"></script>
+    <script src="faq.js"></script>
 </body>
 </html>
