@@ -9,9 +9,25 @@
     <p>Opening page...</p>
     <script>
         const path = window.location.pathname.replace(/\/+$/, '');
-        const route = path.split('/').pop();
-        const basePath = path.slice(0, -route.length) || '/';
-        window.location.replace(`${basePath}?__route=${encodeURIComponent(route)}`);
+        const segments = path.split('/').filter(Boolean);
+        const routeNames = ['about', 'experience', 'education', 'skills', 'projects', 'achievements', 'blogs', 'contact'];
+        let routeIndex = segments.length - 1;
+        if (segments.length > 1 && segments[segments.length - 2] === 'blogs') {
+            routeIndex = segments.length - 2;
+        } else {
+            let knownRouteIndex = -1;
+            for (let index = segments.length - 1; index >= 0; index--) {
+                if (routeNames.includes(segments[index])) {
+                    knownRouteIndex = index;
+                    break;
+                }
+            }
+            if (knownRouteIndex !== -1) routeIndex = knownRouteIndex;
+        }
+
+        const route = segments.slice(routeIndex).join('/');
+        const basePath = `/${segments.slice(0, routeIndex).join('/')}`.replace(/\/$/, '');
+        window.location.replace(`${basePath || ''}/?__route=${encodeURIComponent(route)}`);
     </script>
 </body>
 </html>

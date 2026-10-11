@@ -18,19 +18,34 @@ function init() {
     const sections = [...document.querySelectorAll('main > section[id]')];
     const navLinks = document.querySelectorAll('.sidebar-nav a');
     const routeIds = sections.map(section => section.id).filter(id => id !== 'not-found');
+    const blogPosts = window.blogPosts || [];
+    const blogRoute = route => /^blogs\/[a-z0-9-]+$/.test(route) && blogPosts.some(post => `blogs/${post.slug}` === route);
     const redirectRoute = new URLSearchParams(window.location.search).get('__route');
     const initialPath = window.location.pathname.replace(/\/+$/, '');
     let basePath;
 
-    if (redirectRoute && /^[a-z0-9-]+$/.test(redirectRoute)) {
+    if (redirectRoute && (routeIds.includes(redirectRoute) || blogRoute(redirectRoute))) {
         basePath = initialPath;
         window.history.replaceState({}, '', `${basePath}/${redirectRoute}`);
     } else {
-        const lastSegment = initialPath.split('/').pop();
-        basePath = routeIds.includes(lastSegment)
-            ? initialPath.slice(0, -lastSegment.length).replace(/\/+$/, '')
-            : initialPath;
+        const segments = initialPath.split('/').filter(Boolean);
+        const blogIndex = segments.length > 1 && segments[segments.length - 2] === 'blogs'
+            ? segments.length - 2
+            : -1;
+        const lastSegment = segments[segments.length - 1];
+        if (blogIndex !== -1) {
+            basePath = `/${segments.slice(0, blogIndex).join('/')}`.replace(/\/$/, '');
+        } else if (routeIds.includes(lastSegment)) {
+            basePath = initialPath.slice(0, -lastSegment.length).replace(/\/+$/, '');
+        } else {
+            basePath = initialPath;
+        }
     }
+    window.portfolioBasePath = basePath;
+    const portfolioScript = document.querySelector('script[src$="portfolio.js"]');
+    window.portfolioAssetBaseUrl = portfolioScript
+        ? new URL('.', portfolioScript.src).href
+        : new URL('.', window.location.href).href;
 
     document.querySelectorAll('a[data-route]').forEach(link => {
         const route = link.dataset.route;
@@ -47,6 +62,7 @@ function init() {
                 if (section.offsetTop <= scrollY) current = section.id;
             });
         }
+        if (current && current.startsWith('blogs/')) current = 'blogs';
         navLinks.forEach(link => {
             const active = link.dataset.route === current;
             link.classList.toggle('active', active);
@@ -60,7 +76,7 @@ function init() {
     function renderRoute() {
         const path = window.location.pathname.replace(/\/+$/, '');
         const requestedPage = path.slice(basePath.length).replace(/^\/+/, '') || 'home';
-        const page = requestedPage === 'home' || routeIds.includes(requestedPage)
+        const page = requestedPage === 'home' || routeIds.includes(requestedPage) || blogRoute(requestedPage)
             ? requestedPage
             : 'not-found';
 
@@ -68,16 +84,22 @@ function init() {
         sections.forEach(section => {
             section.hidden = page === 'home'
                 ? section.id === 'not-found'
-                : section.id !== page;
+                : section.id !== (page.startsWith('blogs/') ? 'blogs' : page);
         });
         document.querySelectorAll('.main > .divider').forEach(divider => {
             divider.hidden = page !== 'home';
         });
 
-        const pageTitle = page === 'home'
+        const blogPost = page.startsWith('blogs/') ? blogPosts.find(post => `blogs/${post.slug}` === page) : null;
+        const pageTitle = blogPost
+            ? `${blogPost.title} | Vijay Joshi`
+            : page === 'home'
             ? 'Vijay Joshi | AI Engineer'
             : `${page === 'not-found' ? 'Page not found' : page[0].toUpperCase() + page.slice(1)} | Vijay Joshi`;
         document.title = pageTitle;
+        if (page === 'blogs' || page.startsWith('blogs/')) {
+            renderBlogPage(page.startsWith('blogs/') ? page.slice('blogs/'.length) : null);
+        }
         setActive();
     }
 
