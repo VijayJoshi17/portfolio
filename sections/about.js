@@ -1,6 +1,6 @@
 registerSection('about', `
     <div class="profile">
-        <img src="images/profile-2.jpg" alt="Vijay Joshi" class="profile-img">
+        <img src="images/profile.png" alt="Vijay Joshi" class="profile-img">
         <div class="profile-info">
             <h1>Vijay Joshi</h1>
             <p class="profile-role">AI Engineer · Ahmedabad, India</p>
