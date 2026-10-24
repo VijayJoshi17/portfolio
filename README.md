@@ -4,7 +4,9 @@ Portfolio Website
 
 The root path shows the full portfolio. Sections also have individual paths: `/about`, `/experience`, `/education`, `/skills`, `/projects`, `/achievements`, `/blogs`, and `/contact`. Individual posts use `/blogs/<slug>`, such as `/blogs/llm-evals`.
 
-GitHub Pages uses `404.html` to send direct route visits back through the app, including project pages hosted under a repository subpath. Client-side navigation and refreshable routes work without a backend or Node.js.
+GitHub Pages uses static route entry points to provide social link metadata and redirect visitors into the app. `404.html` handles unknown routes and project pages hosted under a repository subpath. Client-side navigation and refreshable routes work without a backend or Node.js.
+
+Each section and blog post has its own static entry point so social link previews can read route-specific Open Graph metadata before the app loads.
 
 ## Writing blog posts
 
