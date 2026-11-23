@@ -104,7 +104,7 @@
         </div>
     </div>
 
-    <button class="faq-launcher" id="faqLauncher" type="button" aria-label="Open portfolio FAQ" aria-controls="faqPanel" aria-expanded="false" title="Ask about Vijay">
+    <button class="faq-launcher" id="faqLauncher" type="button" aria-label="Ask my portfolio" aria-controls="faqPanel" aria-expanded="false" title="Ask my portfolio">
         <span class="faq-launcher-dot" aria-hidden="true"></span>
         <span class="faq-launcher-text">Ask</span>
     </button>
@@ -112,20 +112,20 @@
     <aside class="faq-panel" id="faqPanel" role="dialog" aria-labelledby="faqTitle" hidden>
         <header class="faq-header">
             <div>
-                <h2 id="faqTitle">Portfolio FAQ</h2>
-                <p>Vijay Joshi · AI Engineer</p>
+                <h2 id="faqTitle">Ask my portfolio</h2>
+                <p>BM25 + MMR · runs in your browser · no LLM</p>
             </div>
-            <button class="faq-close" id="faqClose" type="button" aria-label="Close portfolio FAQ" title="Close">
+            <button class="faq-close" id="faqClose" type="button" aria-label="Close" title="Close">
                 <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
             </button>
         </header>
         <div class="faq-conversation" id="faqConversation" role="log" aria-live="polite" aria-relevant="additions">
-            <p class="faq-message faq-assistant-message">Hi! What would you like to know about Vijay's work?</p>
+            <div class="faq-message faq-assistant-message"><p>Hi! I search the <b id="faqPassageCount">~150</b> passages on this site and quote what I find. Nothing is generated, so open the <em>retrieval trace</em> under any answer to see why it was picked.</p></div>
             <div class="faq-suggestions" id="faqSuggestions"></div>
         </div>
         <form class="faq-form" id="faqForm">
             <label class="sr-only" for="faqInput">Ask a question</label>
-            <input id="faqInput" name="question" type="text" placeholder="Ask a question..." autocomplete="off" maxlength="240" required>
+            <input id="faqInput" name="question" type="text" placeholder="Ask anything, e.g. RAG experience?" autocomplete="off" maxlength="240" required>
             <button type="submit" aria-label="Send question" title="Send question">
                 <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" fill="none"/></svg>
             </button>

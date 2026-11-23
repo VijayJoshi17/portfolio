@@ -273,7 +273,7 @@
         let running = false;
         let lastTime = 0;
         function frame(now) {
-            const dt = Math.min(0.05, (now - lastTime) / 1000 || 0.016);
+            const dt = Math.min(0.05, Math.max(0, (now - lastTime) / 1000) || 0.016);
             lastTime = now;
             state.t += dt;
 
