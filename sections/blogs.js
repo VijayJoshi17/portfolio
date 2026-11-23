@@ -13,21 +13,35 @@ function blogRouteHref(route) {
     return `${basePath}/${route}`;
 }
 
+function formatBlogDate(value) {
+    const date = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+const blogSectionHead = `
+    <header class="sec-head">
+        <span class="sec-idx">06</span>
+        <h2 class="sec-title">Writing</h2>
+        <p class="sec-sub">Notes on retrieval, evaluation and building with LLMs.</p>
+    </header>`;
+
 function renderBlogPosts() {
     const blogPosts = window.blogPosts || [];
     if (blogPosts.length === 0) {
         return '<p class="blog-empty">No posts yet.</p>';
     }
 
-    return blogPosts.map(post => `
-        <article class="entry blog-entry">
-            <time class="entry-date" datetime="${escapeBlogText(post.date)}">${escapeBlogText(post.date)}</time>
-            <div class="entry-body">
-                <h3 class="entry-title"><a href="${escapeBlogText(blogRouteHref(`blogs/${post.slug}`))}" data-route="blogs/${escapeBlogText(post.slug)}">${escapeBlogText(post.title)}</a></h3>
-                <p class="blog-excerpt">${escapeBlogText(post.excerpt)}</p>
-                ${(post.tags || []).length ? `<div class="entry-tags">${post.tags.map(tag => `<span>${escapeBlogText(tag)}</span>`).join('')}</div>` : ''}
-                <div class="entry-links"><a href="${escapeBlogText(blogRouteHref(`blogs/${post.slug}`))}" data-route="blogs/${escapeBlogText(post.slug)}">Read article <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+    const sorted = [...blogPosts].sort((first, second) => second.date.localeCompare(first.date));
+    return sorted.map((post, index) => `
+        <article class="post-row">
+            <time class="post-date" datetime="${escapeBlogText(post.date)}">${escapeBlogText(formatBlogDate(post.date))}</time>
+            <div class="post-body">
+                <h3 class="post-title"><a href="${escapeBlogText(blogRouteHref(`blogs/${post.slug}`))}" data-route="blogs/${escapeBlogText(post.slug)}">${escapeBlogText(post.title)}</a></h3>
+                <p class="post-excerpt">${escapeBlogText(post.excerpt)}</p>
+                <p class="stack-line">${escapeBlogText(post.readingTime)} min read${(post.tags || []).length ? ` · ${post.tags.map(escapeBlogText).join(' · ')}` : ''}</p>
             </div>
+            <span class="post-arrow" aria-hidden="true">↗</span>
         </article>
     `).join('');
 }
@@ -53,8 +67,8 @@ function renderBlogPage(slug) {
     const post = slug ? blogPosts.find(item => item.slug === slug) : null;
     if (slug && !post) {
         section.innerHTML = `
-            <h2 class="section-title">Article not found</h2>
-            <p class="section-text">This blog post could not be found.</p>
+            <h2 class="sec-title">Article not found</h2>
+            <p class="sec-sub">This blog post could not be found.</p>
             <p class="blog-back-link"><a href="${escapeBlogText(blogRouteHref('blogs'))}" data-route="blogs">Back to blogs</a></p>
         `;
         return;
@@ -62,8 +76,8 @@ function renderBlogPage(slug) {
 
     if (!post) {
         section.innerHTML = `
-            <h2 class="section-title">Blogs</h2>
-            <div class="blog-list">${renderBlogPosts()}</div>
+            ${blogSectionHead}
+            <div class="post-list">${renderBlogPosts()}</div>
         `;
         return;
     }
@@ -71,22 +85,22 @@ function renderBlogPage(slug) {
     const canonicalUrl = `${window.location.origin}${window.location.pathname}`;
     section.innerHTML = `
         <article class="blog-article">
-            <a class="blog-back-link" href="${escapeBlogText(blogRouteHref('blogs'))}" data-route="blogs"><i class="fas fa-arrow-left" aria-hidden="true"></i> All blogs</a>
-            <p class="blog-article-meta">${escapeBlogText(post.date)} <span aria-hidden="true">·</span> ${escapeBlogText(post.readingTime)} min read</p>
+            <a class="blog-back-link" href="${escapeBlogText(blogRouteHref('blogs'))}" data-route="blogs">← All writing</a>
+            <p class="blog-article-meta">${escapeBlogText(formatBlogDate(post.date))} <span aria-hidden="true">·</span> ${escapeBlogText(post.readingTime)} min read</p>
             <h1 class="blog-article-title">${escapeBlogText(post.title)}</h1>
             <p class="blog-article-excerpt">${escapeBlogText(post.excerpt)}</p>
-            ${(post.tags || []).length ? `<div class="entry-tags">${post.tags.map(tag => `<span>${escapeBlogText(tag)}</span>`).join('')}</div>` : ''}
+            ${(post.tags || []).length ? `<p class="stack-line">${post.tags.map(escapeBlogText).join(' · ')}</p>` : ''}
             <div class="blog-article-content">${renderBlogContent(post.content)}</div>
             <div class="blog-actions" data-blog-url="${escapeBlogText(canonicalUrl)}" data-blog-title="${escapeBlogText(post.title)}">
-                <button class="blog-action-button" type="button" data-copy-blog-link title="Copy a link to this article"><i class="fas fa-link" aria-hidden="true"></i> Copy link</button>
-                <button class="blog-action-button" type="button" data-share-blog title="Share this article"><i class="fas fa-share-alt" aria-hidden="true"></i> Share</button>
+                <button class="blog-action-button" type="button" data-copy-blog-link title="Copy a link to this article">Copy link</button>
+                <button class="blog-action-button" type="button" data-share-blog title="Share this article">Share ↗</button>
                 <span class="blog-action-status" role="status" aria-live="polite"></span>
             </div>
         </article>
     `;
 }
 
-registerSection('blogs', '<h2 class="section-title">Blogs</h2>');
+registerSection('blogs', blogSectionHead);
 
 document.addEventListener('click', async event => {
     const action = event.target.closest('[data-copy-blog-link], [data-share-blog]');

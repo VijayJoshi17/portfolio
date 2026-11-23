@@ -1,27 +1,29 @@
-registerSection('skills', `
-    <h2 class="section-title">Skills</h2>
-    <div class="skill-row">
-        <span class="skill-label">Programming</span>
-        <span class="skill-tags"><span>Python</span><span>C++</span><span>C</span><span>Java</span><span>JavaScript</span></span>
-    </div>
-    <div class="skill-row">
-        <span class="skill-label">Machine Learning</span>
-        <span class="skill-tags"><span>TensorFlow</span><span>PyTorch</span><span>Scikit-Learn</span><span>Pandas</span><span>NumPy</span><span>OpenCV</span><span>Seaborn</span><span>Matplotlib</span><span>XGBoost</span><span>LightGBM</span></span>
-    </div>
-    <div class="skill-row">
-        <span class="skill-label">AI Systems</span>
-        <span class="skill-tags"><span>LLMs</span><span>LangChain</span><span>LlamaIndex</span><span>LangGraph</span><span>RAG</span><span>Prompt Engineering</span><span>Multi-Agent Systems</span><span>ReAct</span><span>CoT</span></span>
-    </div>
-    <div class="skill-row">
-        <span class="skill-label">Retrieval & Data</span>
-        <span class="skill-tags"><span>Vector Embeddings</span><span>FAISS</span><span>Pinecone</span><span>ChromaDB</span><span>Weaviate</span><span>MySQL</span><span>MongoDB</span><span>PostgreSQL</span></span>
-    </div>
-    <div class="skill-row">
-        <span class="skill-label">Deployment & MLOps</span>
-        <span class="skill-tags"><span>FastAPI</span><span>Flask</span><span>Docker</span><span>MLflow</span><span>CI/CD</span><span>REST APIs</span></span>
-    </div>
-    <div class="skill-row">
-        <span class="skill-label">Tools & Platforms</span>
-        <span class="skill-tags"><span>Git</span><span>GitHub</span><span>VS Code</span><span>Jupyter</span><span>Linux</span><span>AWS</span><span>GCP</span><span>Streamlit</span><span>Gradio</span></span>
-    </div>
-`);
+(function () {
+    const groups = [
+        ['Programming', ['Python', 'C++', 'C', 'Java', 'JavaScript']],
+        ['Machine Learning', ['TensorFlow', 'PyTorch', 'Scikit-Learn', 'Pandas', 'NumPy', 'OpenCV', 'Seaborn', 'Matplotlib', 'XGBoost', 'LightGBM']],
+        ['AI Systems', ['LLMs', 'LangChain', 'LlamaIndex', 'LangGraph', 'RAG', 'Prompt Engineering', 'Multi-Agent Systems', 'ReAct', 'CoT']],
+        ['Retrieval & Data', ['Vector Embeddings', 'FAISS', 'Pinecone', 'ChromaDB', 'Weaviate', 'MySQL', 'MongoDB', 'PostgreSQL']],
+        ['Deployment & MLOps', ['FastAPI', 'Flask', 'Docker', 'MLflow', 'CI/CD', 'REST APIs']],
+        ['Tools & Platforms', ['Git', 'GitHub', 'VS Code', 'Jupyter', 'Linux', 'AWS', 'GCP', 'Streamlit', 'Gradio']]
+    ];
+
+    registerSection('skills', `
+        <header class="sec-head">
+            <span class="sec-idx">04</span>
+            <h2 class="sec-title">Skills</h2>
+            <p class="sec-sub">The toolkit, grouped by the layer of the system it lives in.</p>
+        </header>
+        <div class="skill-grid">
+            ${groups.map(([label, items], index) => `
+                <div class="skill-card reveal" style="--i:${index}">
+                    <div class="skill-card-head">
+                        <span class="skill-label">${label}</span>
+                        <span class="skill-count">${String(items.length).padStart(2, '0')}</span>
+                    </div>
+                    <p class="skill-items">${items.map(item => `<span>${item}</span>`).join('')}</p>
+                </div>
+            `).join('')}
+        </div>
+    `);
+})();

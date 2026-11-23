@@ -66,7 +66,7 @@ function initPortfolioFaq() {
                 link.textContent = linkInfo.label;
                 if (linkInfo.route) {
                     link.dataset.route = linkInfo.route;
-                    const navLink = document.querySelector(`.sidebar-nav a[data-route="${linkInfo.route}"]`);
+                    const navLink = document.querySelector(`.site-nav a[data-route="${linkInfo.route}"]`);
                     link.href = navLink ? navLink.href : linkInfo.href;
                 } else {
                     link.href = linkInfo.href;

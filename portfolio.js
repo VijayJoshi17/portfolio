@@ -1,34 +1,46 @@
 document.addEventListener('DOMContentLoaded', init);
 
-function init() {
-    const themeBtn = document.getElementById('themeBtn');
-    const saved = localStorage.getItem('theme');
-    if (saved === 'light') {
-        document.body.classList.add('light');
-        themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+function safeStorage(action, key, value) {
+    try {
+        if (action === 'get') return localStorage.getItem(key);
+        localStorage.setItem(key, value);
+    } catch (error) {
+        return null;
     }
+    return null;
+}
 
-    themeBtn.addEventListener('click', () => {
-        document.body.classList.toggle('light');
-        const isLight = document.body.classList.contains('light');
-        themeBtn.innerHTML = isLight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    });
+function init() {
+    const root = document.documentElement;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    // ---------- Theme ----------
+    const themeBtn = document.getElementById('themeBtn');
+    function toggleTheme() {
+        const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+        root.dataset.theme = next;
+        safeStorage('set', 'theme', next);
+        window.dispatchEvent(new CustomEvent('themechange'));
+    }
+    themeBtn.addEventListener('click', toggleTheme);
+
+    // ---------- Routing (static GitHub Pages friendly) ----------
     const sections = [...document.querySelectorAll('main > section[id]')];
-    const navLinks = document.querySelectorAll('.sidebar-nav a');
+    const navLinks = document.querySelectorAll('.site-nav a');
     const routeIds = sections.map(section => section.id).filter(id => id !== 'not-found');
     const blogPosts = window.blogPosts || [];
     const blogRoute = route => /^blogs\/[a-z0-9-]+$/.test(route) && blogPosts.some(post => `blogs/${post.slug}` === route);
+    const latestPost = () => [...blogPosts].sort((first, second) => second.date.localeCompare(first.date))[0];
     const announcementDismissalKey = 'dismissedBlogAnnouncement';
     const announcementClose = document.getElementById('blogAnnouncementClose');
     if (announcementClose) {
         announcementClose.addEventListener('click', () => {
             const announcement = document.getElementById('blogAnnouncement');
-            const latestPost = [...blogPosts].sort((first, second) => second.date.localeCompare(first.date))[0];
-            if (!announcement || !latestPost) return;
-            localStorage.setItem(announcementDismissalKey, latestPost.slug);
+            const post = latestPost();
+            if (!announcement || !post) return;
+            safeStorage('set', announcementDismissalKey, post.slug);
             announcement.hidden = true;
+            buildProgress();
         });
     }
     const redirectRoute = new URLSearchParams(window.location.search).get('__route');
@@ -58,21 +70,64 @@ function init() {
         ? new URL('.', portfolioScript.src).href
         : new URL('.', window.location.href).href;
 
+    const routeHref = route => (route === 'home' ? `${basePath}/` : `${basePath}/${route}`);
     document.querySelectorAll('a[data-route]').forEach(link => {
-        const route = link.dataset.route;
-        link.href = route === 'home' ? `${basePath}/` : `${basePath}/${route}`;
+        if (link.dataset.route) link.href = routeHref(link.dataset.route);
     });
 
-    function setActive() {
-        const page = document.body.dataset.page;
-        let current = page;
-        if (page === 'home') {
-            const scrollY = window.scrollY + window.innerHeight * 0.3;
-            current = 'about';
-            sections.filter(section => section.id !== 'not-found').forEach(section => {
-                if (section.offsetTop <= scrollY) current = section.id;
+    // Images inside sections use paths relative to the site root.
+    document.querySelectorAll('main img[src^="images/"]').forEach(image => {
+        image.src = new URL(image.getAttribute('src'), window.portfolioAssetBaseUrl).href;
+    });
+
+    // ---------- Segmented scroll progress ----------
+    const progress = document.getElementById('progress');
+    let segments = [];
+
+    function visibleSections() {
+        return sections.filter(section => !section.hidden && section.id !== 'not-found');
+    }
+
+    function buildProgress() {
+        progress.innerHTML = '';
+        segments = visibleSections().map(section => {
+            const segment = document.createElement('span');
+            segment.className = 'progress-seg';
+            segment.style.flexGrow = String(Math.max(1, section.offsetHeight));
+            segment.innerHTML = '<i></i>';
+            progress.appendChild(segment);
+            return { section, fill: segment.firstChild, element: segment };
+        });
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const scrollY = window.scrollY;
+        const viewport = window.innerHeight;
+        const docHeight = document.documentElement.scrollHeight;
+        const atBottom = scrollY + viewport >= docHeight - 4;
+        let current = segments.length ? segments[0].section.id : null;
+
+        if (segments.length === 1) {
+            const ratio = docHeight > viewport ? scrollY / (docHeight - viewport) : 1;
+            segments[0].fill.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
+        } else {
+            const probe = scrollY + viewport * 0.35;
+            segments.forEach(({ section, fill }) => {
+                const top = section.getBoundingClientRect().top + scrollY;
+                const ratio = atBottom ? 1 : (probe - top) / section.offsetHeight;
+                fill.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
+                if (top <= probe) current = section.id;
             });
+            if (atBottom && segments.length) current = segments[segments.length - 1].section.id;
         }
+        segments.forEach(({ section, element }) => element.classList.toggle('is-current', section.id === current));
+        setActive(current);
+    }
+
+    function setActive(scrollCurrent) {
+        const page = document.body.dataset.page;
+        let current = page === 'home' ? scrollCurrent : page;
         if (current && current.startsWith('blogs/')) current = 'blogs';
         navLinks.forEach(link => {
             const active = link.dataset.route === current;
@@ -82,8 +137,43 @@ function init() {
         });
     }
 
-    window.addEventListener('scroll', setActive, { passive: true });
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            updateProgress();
+            document.body.classList.toggle('scrolled', window.scrollY > 8);
+            ticking = false;
+        });
+    }, { passive: true });
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(buildProgress, 150);
+    });
 
+    // ---------- Reveal on scroll ----------
+    const revealObserver = 'IntersectionObserver' in window && !reduceMotion
+        ? new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-in');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' })
+        : null;
+
+    function observeReveals(scope) {
+        scope.querySelectorAll('.reveal:not(.is-in)').forEach(element => {
+            if (revealObserver) revealObserver.observe(element);
+            else element.classList.add('is-in');
+        });
+    }
+    window.observeReveals = observeReveals;
+
+    // ---------- Route rendering ----------
     function renderRoute() {
         const path = window.location.pathname.replace(/\/+$/, '');
         const requestedPage = path.slice(basePath.length).replace(/^\/+/, '') || 'home';
@@ -97,39 +187,48 @@ function init() {
                 ? section.id === 'not-found'
                 : section.id !== (page.startsWith('blogs/') ? 'blogs' : page);
         });
-        document.querySelectorAll('.main > .divider').forEach(divider => {
-            divider.hidden = page !== 'home';
-        });
 
         const announcement = document.getElementById('blogAnnouncement');
-        const latestPost = [...blogPosts].sort((first, second) => second.date.localeCompare(first.date))[0];
+        const post = latestPost();
         if (announcement) {
-            announcement.hidden = page !== 'home' || !latestPost
-                || localStorage.getItem(announcementDismissalKey) === latestPost.slug;
-            if (latestPost) {
-                const route = `blogs/${latestPost.slug}`;
+            announcement.hidden = page !== 'home' || !post
+                || safeStorage('get', announcementDismissalKey) === post.slug;
+            if (post) {
+                const route = `blogs/${post.slug}`;
                 const link = announcement.querySelector('.blog-announcement-title');
                 const date = announcement.querySelector('.blog-announcement-date');
                 link.dataset.route = route;
-                link.href = `${basePath}/${route}`;
-                link.textContent = latestPost.title;
-                date.dateTime = latestPost.date;
-                date.textContent = latestPost.date;
+                link.href = routeHref(route);
+                link.textContent = post.title;
+                date.dateTime = post.date;
+                date.textContent = typeof formatBlogDate === 'function' ? formatBlogDate(post.date) : post.date;
             }
         }
 
-        const blogPost = page.startsWith('blogs/') ? blogPosts.find(post => `blogs/${post.slug}` === page) : null;
-        const pageTitle = blogPost
+        const blogPost = page.startsWith('blogs/') ? blogPosts.find(item => `blogs/${item.slug}` === page) : null;
+        document.title = blogPost
             ? `${blogPost.title} | Vijay Joshi`
             : page === 'home'
             ? 'Vijay Joshi | AI Engineer'
             : `${page === 'not-found' ? 'Page not found' : page[0].toUpperCase() + page.slice(1)} | Vijay Joshi`;
-        document.title = pageTitle;
-        if (page === 'blogs' || page.startsWith('blogs/')) {
+
+        if (typeof renderBlogPage === 'function' && (page === 'home' || page === 'blogs' || page.startsWith('blogs/'))) {
             renderBlogPage(page.startsWith('blogs/') ? page.slice('blogs/'.length) : null);
+            observeReveals(document.getElementById('blogs'));
         }
-        setActive();
+        buildProgress();
+        window.dispatchEvent(new CustomEvent('routechange', { detail: { page } }));
     }
+
+    function navigate(route) {
+        const destination = routeHref(route);
+        if (destination !== window.location.pathname) {
+            window.history.pushState({}, '', destination);
+            renderRoute();
+        }
+        window.scrollTo(0, 0);
+    }
+    window.portfolioNavigate = navigate;
 
     document.addEventListener('click', event => {
         const link = event.target.closest('a[data-route]');
@@ -142,46 +241,210 @@ function init() {
         if (destination.pathname !== window.location.pathname) {
             window.history.pushState({}, '', destination.pathname);
             renderRoute();
-            window.scrollTo(0, 0);
         }
+        window.scrollTo(0, 0);
     });
     window.addEventListener('popstate', renderRoute);
     renderRoute();
+    observeReveals(document);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(buildProgress);
+    window.addEventListener('load', buildProgress);
 
-    // Scroll animations
-    const animObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
+    // ---------- Command palette ----------
+    const palette = document.getElementById('palette');
+    const paletteInput = document.getElementById('paletteInput');
+    const paletteList = document.getElementById('paletteList');
+    const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+    const shortcutLabel = isMac ? '⌘K' : 'Ctrl K';
+    document.getElementById('paletteKey').textContent = shortcutLabel;
+    document.getElementById('footerKey').textContent = shortcutLabel;
+
+    // The contact address is defined once, in the contact section's mail link.
+    const mailLink = document.querySelector('.contact-email');
+    const mailHref = mailLink ? mailLink.getAttribute('href') : '';
+    const contactAddress = mailHref.replace(/^mailto:/, '');
+
+    const sectionLabels = {
+        about: 'About', experience: 'Experience', education: 'Education', skills: 'Skills',
+        projects: 'Projects', blogs: 'Writing', achievements: 'Achievements', contact: 'Contact'
+    };
+    const openExternal = url => window.open(url, '_blank', 'noopener');
+    const copyText = async text => {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+            return;
+        }
+        const temporary = document.createElement('textarea');
+        temporary.value = text;
+        temporary.style.position = 'fixed';
+        temporary.style.opacity = '0';
+        document.body.appendChild(temporary);
+        temporary.select();
+        const copied = document.execCommand('copy');
+        temporary.remove();
+        if (!copied) throw new Error('Clipboard unavailable');
+    };
+    const commands = [
+        { group: 'Go to', label: 'Home', hint: 'top', run: () => navigate('home') },
+        ...routeIds.map((id, index) => ({
+            group: 'Go to', label: sectionLabels[id] || id, hint: String(index + 1).padStart(2, '0'), run: () => navigate(id)
+        })),
+        ...blogPosts.map(post => ({ group: 'Read', label: post.title, hint: `${post.readingTime} min`, run: () => navigate(`blogs/${post.slug}`) })),
+        { group: 'Do', label: 'Toggle light / dark theme', hint: 'theme', run: toggleTheme },
+        { group: 'Do', label: 'Copy email address', hint: 'clipboard', run: () => copyText(contactAddress).catch(() => {}) },
+        { group: 'Do', label: 'Write an email', hint: 'mail app', run: () => { window.location.href = mailHref; } },
+        { group: 'Do', label: 'Ask the portfolio FAQ', hint: 'faq', run: () => document.getElementById('faqLauncher').click() },
+        { group: 'Open', label: 'GitHub', hint: 'VijayJoshi17', run: () => openExternal('https://github.com/VijayJoshi17') },
+        { group: 'Open', label: 'LinkedIn', hint: 'profile', run: () => openExternal('https://www.linkedin.com/in/vijay-joshi-4b5474244/') },
+        { group: 'Open', label: 'Data Science Portfolio', hint: 'datascienceportfol.io', run: () => openExternal('https://www.datascienceportfol.io/VijayJoshi') }
+    ];
+    let filtered = commands;
+    let selected = 0;
+    let lastFocus = null;
+
+    function score(command, query) {
+        if (!query) return 1;
+        const text = `${command.group} ${command.label} ${command.hint}`.toLowerCase();
+        if (text.includes(query)) return 2 + (command.label.toLowerCase().startsWith(query) ? 1 : 0);
+        let position = 0;
+        for (const character of query) {
+            position = text.indexOf(character, position);
+            if (position === -1) return 0;
+            position++;
+        }
+        return 1;
+    }
+
+    function renderPalette() {
+        const query = paletteInput.value.trim().toLowerCase();
+        filtered = commands
+            .map(command => ({ command, rank: score(command, query) }))
+            .filter(item => item.rank > 0)
+            .sort((first, second) => second.rank - first.rank)
+            .map(item => item.command);
+        selected = Math.min(selected, Math.max(0, filtered.length - 1));
+        paletteList.innerHTML = '';
+        if (!filtered.length) {
+            const empty = document.createElement('li');
+            empty.className = 'palette-empty';
+            empty.textContent = 'No matches. Try "projects", "rag" or "theme".';
+            paletteList.appendChild(empty);
+            paletteInput.removeAttribute('aria-activedescendant');
+            return;
+        }
+        let lastGroup = null;
+        filtered.forEach((command, index) => {
+            if (!query && command.group !== lastGroup) {
+                const heading = document.createElement('li');
+                heading.className = 'palette-group';
+                heading.setAttribute('role', 'presentation');
+                heading.textContent = command.group;
+                paletteList.appendChild(heading);
+                lastGroup = command.group;
+            }
+            const item = document.createElement('li');
+            item.id = `palette-item-${index}`;
+            item.className = 'palette-item';
+            item.setAttribute('role', 'option');
+            const label = document.createElement('span');
+            label.textContent = command.label;
+            const hint = document.createElement('span');
+            hint.className = 'palette-hint';
+            hint.textContent = command.hint;
+            item.append(label, hint);
+            item.addEventListener('mousemove', () => {
+                if (selected !== index) { selected = index; updateSelection(); }
+            });
+            item.addEventListener('click', () => runCommand(index));
+            paletteList.appendChild(item);
+        });
+        updateSelection();
+    }
+
+    function updateSelection() {
+        paletteList.querySelectorAll('.palette-item').forEach(item => {
+            const active = item.id === `palette-item-${selected}`;
+            item.setAttribute('aria-selected', String(active));
+            if (active) {
+                paletteInput.setAttribute('aria-activedescendant', item.id);
+                item.scrollIntoView({ block: 'nearest' });
             }
         });
-    }, { threshold: 0.1 });
+    }
 
-    document.querySelectorAll('.entry, .skill-row').forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(16px)';
-        el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-        animObserver.observe(el);
+    function openPalette() {
+        lastFocus = document.activeElement;
+        palette.hidden = false;
+        paletteInput.value = '';
+        selected = 0;
+        renderPalette();
+        requestAnimationFrame(() => {
+            palette.classList.add('open');
+            paletteInput.focus();
+        });
+    }
+
+    function closePalette() {
+        palette.classList.remove('open');
+        palette.hidden = true;
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    function runCommand(index) {
+        const command = filtered[index];
+        if (!command) return;
+        closePalette();
+        command.run();
+    }
+
+    document.getElementById('paletteBtn').addEventListener('click', openPalette);
+    palette.addEventListener('click', event => {
+        if (event.target.closest('[data-palette-close]')) closePalette();
+    });
+    paletteInput.addEventListener('input', () => { selected = 0; renderPalette(); });
+    paletteInput.addEventListener('keydown', event => {
+        const count = Math.max(1, filtered.length);
+        if (event.key === 'ArrowDown') { event.preventDefault(); selected = (selected + 1) % count; updateSelection(); }
+        else if (event.key === 'ArrowUp') { event.preventDefault(); selected = (selected - 1 + count) % count; updateSelection(); }
+        else if (event.key === 'Enter') { event.preventDefault(); runCommand(selected); }
+        else if (event.key === 'Escape') { event.preventDefault(); closePalette(); }
+        else if (event.key === 'Tab') { event.preventDefault(); }
+    });
+    document.addEventListener('keydown', event => {
+        const active = document.activeElement;
+        const typing = active && (/^(INPUT|TEXTAREA|SELECT)$/.test(active.tagName) || active.isContentEditable);
+        if ((event.key === 'k' || event.key === 'K') && (event.metaKey || event.ctrlKey)) {
+            event.preventDefault();
+            if (palette.hidden) openPalette(); else closePalette();
+        } else if (event.key === '/' && !typing && palette.hidden) {
+            event.preventDefault();
+            openPalette();
+        }
     });
 
-    // Contact Form
+    // ---------- Contact ----------
     const form = document.getElementById('contactForm');
     if (form) {
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const msg = document.getElementById('formMessage');
-            const btn = form.querySelector('.form-submit');
-            btn.disabled = true;
-            btn.textContent = 'Sending...';
-            setTimeout(() => {
-                msg.className = 'form-message success';
-                msg.textContent = "Message sent! I'll get back to you soon.";
-                form.reset();
-                btn.disabled = false;
-                btn.textContent = 'Send Message';
-                setTimeout(() => msg.style.display = 'none', 5000);
-            }, 1500);
+        form.addEventListener('submit', event => {
+            event.preventDefault();
+            const data = new FormData(form);
+            const subject = encodeURIComponent(data.get('subject'));
+            const body = encodeURIComponent(`${data.get('message')}\n\n- ${data.get('name')}`);
+            window.location.href = `${mailHref}?subject=${subject}&body=${body}`;
+        });
+    }
+
+    const copyButton = document.getElementById('copyEmail');
+    if (copyButton) {
+        copyButton.addEventListener('click', async () => {
+            const status = document.getElementById('copyEmailStatus');
+            try {
+                await copyText(contactAddress);
+                status.textContent = 'Copied ✓';
+            } catch (error) {
+                status.textContent = 'Copy failed. Select the address instead.';
+            }
+            setTimeout(() => { status.textContent = ''; }, 2400);
         });
     }
 }
