@@ -43,6 +43,13 @@ function init() {
             buildProgress();
         });
     }
+    // Resolve where the site's files live before any history.replaceState: script.src is
+    // re-resolved against the current URL, so after rewriting to /blogs/<slug> it would point there.
+    const portfolioScript = document.querySelector('script[src$="portfolio.js"]');
+    window.portfolioAssetBaseUrl = portfolioScript
+        ? new URL('.', portfolioScript.src).href
+        : new URL('.', window.location.href).href;
+
     const redirectRoute = new URLSearchParams(window.location.search).get('__route');
     const initialPath = window.location.pathname.replace(/\/+$/, '');
     let basePath;
@@ -65,10 +72,6 @@ function init() {
         }
     }
     window.portfolioBasePath = basePath;
-    const portfolioScript = document.querySelector('script[src$="portfolio.js"]');
-    window.portfolioAssetBaseUrl = portfolioScript
-        ? new URL('.', portfolioScript.src).href
-        : new URL('.', window.location.href).href;
 
     const routeHref = route => (route === 'home' ? `${basePath}/` : `${basePath}/${route}`);
     document.querySelectorAll('a[data-route]').forEach(link => {

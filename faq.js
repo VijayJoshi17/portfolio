@@ -44,7 +44,7 @@ const followUps = {
     education: ['What was his GPA?', 'Where did he study?'],
     skills: ['Which vector databases does he know?', 'Does he know cloud platforms?'],
     projects: ['How does the RAG system reduce hallucinations?', 'Which projects have a live demo?'],
-    blogs: ['What is MMR?', 'How should LLM apps be evaluated?'],
+    blogs: ['What is MMR?', 'How should LLM apps be evaluated?', 'What is Jev?'],
     achievements: ['How did he do on Kaggle?', 'What clubs was he part of?'],
     contact: ['Is he open to new roles?', 'What does Vijay specialize in?']
 };
@@ -71,6 +71,7 @@ const SYNONYMS = {
     github: ['code'], code: ['github'], demo: ['live', 'demo'], blog: ['writing', 'post'], article: ['post', 'writing'], wrote: ['writing'],
     award: ['achievement', 'kaggle', 'rank'], achievement: ['award', 'rank'], competition: ['kaggle'], rank: ['percentile', 'rank'],
     build: ['built', 'develop', 'engineer'], built: ['develop', 'engineer'], make: ['built', 'develop'], made: ['built', 'develop'],
+    limitation: ['badly', 'fit', 'weakness'], limit: ['badly', 'fit'], weakness: ['badly', 'fit'], downside: ['badly', 'fit'], avoid: ['badly', 'fit'], bad: ['badly'],
     healthcare: ['clinical', 'medical'], medical: ['clinical'], health: ['clinical', 'medical'], sql: ['postgresql', 'text-to-sql'], ocr: ['ocr', 'document'],
     cloud: ['azure', 'aws', 'gcp'], deploy: ['docker', 'deployment', 'production'], mlops: ['mlflow', 'docker'],
     now: ['present', 'currently'], current: ['present', 'currently'], currently: ['present'],
@@ -232,8 +233,15 @@ class PortfolioIndex {
             const jaccard = shared / new Set([...questionWords, ...chunk.headingWords]).size;
             return jaccard >= 0.6 ? 2 : 1;
         };
+        // "What is X?" prefers passages that define X ("X is a…", "…, or X, is a…").
+        const definitional = question.trim().match(/^(?:what\s+is|what's|whats|what\s+are|define|explain)\s+(?:an?\s+|the\s+)?(.+?)[?.!]*$/i);
+        const subject = definitional ? definitional[1].toLowerCase().replace(/[^a-z0-9+#. -]/g, '').trim() : '';
+        const definitionPattern = subject && subject.split(/\s+/).length <= 4
+            ? new RegExp(`\\b${subject.replace(/[.+#]/g, '\\$&')}\\b[^.]{0,3}\\s(?:is|are)\\s(?:a|an|the)\\s`, 'i')
+            : null;
+        const definitionBoost = chunk => (definitionPattern && definitionPattern.test(chunk.text) ? 1.8 : 1);
         const ranked = this.chunks
-            .map(chunk => ({ chunk, score: this.bm25(chunk, terms) * headingBoost(chunk) }))
+            .map(chunk => ({ chunk, score: this.bm25(chunk, terms) * headingBoost(chunk) * definitionBoost(chunk) }))
             .filter(item => item.score > 0)
             .sort((first, second) => second.score - first.score)
             .slice(0, pool);
