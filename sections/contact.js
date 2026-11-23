@@ -14,16 +14,23 @@ registerSection('contact', `
                 <li><a class="ulink" href="https://www.linkedin.com/in/vijay-joshi-4b5474244/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></li>
                 <li><a class="ulink" href="https://github.com/VijayJoshi17" target="_blank" rel="noopener noreferrer">GitHub ↗</a></li>
                 <li><a class="ulink" href="https://www.datascienceportfol.io/VijayJoshi" target="_blank" rel="noopener noreferrer">Data Science Portfolio ↗</a></li>
+                <li hidden><a class="ulink" data-resume download="Vijay_Joshi_Resume.pdf">Résumé (PDF) ↓</a></li>
             </ul>
         </div>
-        <form class="contact-form reveal" id="contactForm">
-            <p class="mono-label">Compose a message</p>
-            <label><span>Name</span><input type="text" name="name" autocomplete="name" required></label>
+        <!-- Paste your Web3Forms access key into data-web3forms-key (it is public by design).
+             While it is empty, the form falls back to opening the visitor's email app. -->
+        <form class="contact-form reveal" id="contactForm" data-web3forms-key="220efc72-3a84-4cb6-8b10-2d04ae03c39c" novalidate>
+            <p class="mono-label">Send a message</p>
+            <div class="form-row">
+                <label><span>Name</span><input type="text" name="name" autocomplete="name" required></label>
+                <label><span>Your email</span><input type="email" name="email" autocomplete="email" required></label>
+            </div>
             <label><span>Subject</span><input type="text" name="subject" required></label>
             <label><span>Message</span><textarea name="message" rows="5" required></textarea></label>
+            <input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">
             <div class="form-foot">
-                <button type="submit" class="btn-primary">Open in email app</button>
-                <span class="form-note">Opens your mail client with this message filled in.</span>
+                <button type="submit" class="btn-primary" id="contactSubmit">Send message</button>
+                <span class="form-note" id="contactNote" role="status" aria-live="polite"></span>
             </div>
         </form>
     </div>

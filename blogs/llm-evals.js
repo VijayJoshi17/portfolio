@@ -56,6 +56,7 @@ window.registerBlog({
             type: 'paragraph',
             text: 'For open-ended answers, human review can provide a strong reference, especially while requirements are still being clarified. An LLM-as-a-judge can help scale comparisons, but it is still a model making judgments. Give it a clear rubric, test its decisions against human-reviewed examples, and watch for biases such as preferring longer answers or a particular writing style. Treat judge scores as measurements with limitations, not as ground truth.'
         },
+        { type: 'figure', name: 'grader', caption: 'A toy LLM judge versus human labels' },
         { type: 'heading', text: 'Evaluate each stage of a RAG system' },
         {
             type: 'paragraph',

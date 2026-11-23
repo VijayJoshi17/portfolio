@@ -69,7 +69,8 @@
                 'Applied preprocessing and evaluation techniques including confusion matrix, ROC, and learning curves to improve reliability.'
             ],
             stack: ['Python', 'Deep Learning', 'OpenCV'],
-            links: [{ label: 'Code', href: 'https://github.com/VijayJoshi17/Drowsiness-Detection' }]
+            links: [{ label: 'Code', href: 'https://github.com/VijayJoshi17/Drowsiness-Detection' }],
+            figure: '<figure class="fig drowsy-fig" data-figure="drowsy" data-fig-num="Fig. 4" data-fig-title="Blinks vs. nodding off, simulated"></figure>'
         },
         {
             year: '2023',
@@ -84,7 +85,8 @@
             links: [
                 { label: 'Code', href: 'https://github.com/VijayJoshi17/Disaster-Tweets-Streamlit' },
                 { label: 'Live demo', href: 'https://disaster-tweets-app-l39ecbvvaynfigtapzppfk.streamlit.app/' }
-            ]
+            ],
+            figure: '<figure class="fig tweets-fig" data-figure="tweets" data-fig-num="Fig. 5" data-fig-title="Fire, but which kind?"></figure>'
         }
     ];
 

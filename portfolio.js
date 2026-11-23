@@ -425,13 +425,87 @@ function init() {
     // ---------- Contact ----------
     const form = document.getElementById('contactForm');
     if (form) {
-        form.addEventListener('submit', event => {
-            event.preventDefault();
-            const data = new FormData(form);
+        const accessKey = (form.dataset.web3formsKey || '').trim();
+        const submit = document.getElementById('contactSubmit');
+        const note = document.getElementById('contactNote');
+        const idleNote = accessKey
+            ? 'Goes straight to Vijay’s inbox. He replies by email.'
+            : 'Opens your mail client with this message filled in.';
+        if (!accessKey) submit.textContent = 'Open in email app';
+        note.textContent = idleNote;
+
+        const mailtoFor = data => {
             const subject = encodeURIComponent(data.get('subject'));
-            const body = encodeURIComponent(`${data.get('message')}\n\n- ${data.get('name')}`);
-            window.location.href = `${mailHref}?subject=${subject}&body=${body}`;
+            const body = encodeURIComponent(`${data.get('message')}\n\n- ${data.get('name')}${data.get('email') ? ` (${data.get('email')})` : ''}`);
+            return `${mailHref}?subject=${subject}&body=${body}`;
+        };
+
+        form.addEventListener('submit', async event => {
+            event.preventDefault();
+            if (!form.reportValidity()) return;
+            const data = new FormData(form);
+            if (data.get('botcheck')) return;
+            if (!accessKey) {
+                window.location.href = mailtoFor(data);
+                return;
+            }
+            submit.disabled = true;
+            submit.textContent = 'Sending…';
+            note.textContent = '';
+            try {
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                    body: JSON.stringify({
+                        access_key: accessKey,
+                        name: data.get('name'),
+                        email: data.get('email'),
+                        subject: `[Portfolio] ${data.get('subject')}`,
+                        message: data.get('message'),
+                        from_name: 'Portfolio contact form'
+                    })
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.success) throw new Error(result.message || 'Send failed');
+                form.reset();
+                note.textContent = 'Sent ✓ Thanks! Vijay will reply by email.';
+                submit.textContent = 'Send another';
+            } catch (error) {
+                note.textContent = 'Could not send right now. ';
+                const fallback = document.createElement('a');
+                fallback.className = 'ulink';
+                fallback.href = mailtoFor(data);
+                fallback.textContent = 'Email instead →';
+                note.appendChild(fallback);
+                submit.textContent = 'Try again';
+            } finally {
+                submit.disabled = false;
+            }
         });
+    }
+
+    // ---------- Résumé: links appear only once the PDF is actually deployed ----------
+    const resumeUrl = new URL('Vijay_Joshi_Resume.pdf', window.portfolioAssetBaseUrl).href;
+    if (window.location.protocol.startsWith('http')) {
+        fetch(resumeUrl, { method: 'HEAD' }).then(response => {
+            const type = response.headers.get('content-type') || '';
+            if (!response.ok || !type.includes('pdf')) return;
+            document.querySelectorAll('[data-resume]').forEach(link => {
+                link.href = resumeUrl;
+                link.hidden = false;
+                const item = link.closest('li');
+                if (item) item.hidden = false;
+            });
+            commands.splice(1, 0, {
+                group: 'Go to', label: 'Download résumé (PDF)', hint: 'resume cv', run: () => {
+                    const link = document.createElement('a');
+                    link.href = resumeUrl;
+                    link.download = 'Vijay_Joshi_Resume.pdf';
+                    link.click();
+                }
+            });
+            window.portfolioResumeUrl = resumeUrl;
+        }).catch(() => {});
     }
 
     const copyButton = document.getElementById('copyEmail');

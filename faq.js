@@ -23,7 +23,7 @@ const portfolioFaqs = [
     },
     {
         question: 'What technologies does Vijay use?',
-        answer: 'His toolkit includes Python, PyTorch, TensorFlow, LangChain, LangGraph, RAG frameworks, vector databases, FastAPI, Docker, and cloud platforms.',
+        answer: 'His toolkit includes Python, PyTorch, LangChain, LangGraph, CrewAI, Hugging Face Transformers, hybrid retrieval (BM25 + vectors with Qdrant or FAISS), FastAPI, Docker, and Microsoft Azure.',
         links: [{ label: 'View skills', route: 'skills' }]
     },
     {
@@ -40,7 +40,7 @@ const starterQuestions = ['What is MMR?', 'Where has he used computer vision?'];
 
 const followUps = {
     about: ['What is he working on now?', 'What are his biggest results?'],
-    experience: ['What did he do at Kevision Systems?', 'How much time did his automation save?'],
+    experience: ['What did he build at AIVantage?', 'What did he do at Kevision Systems?', 'Has he worked with medical records?'],
     education: ['What was his GPA?', 'Where did he study?'],
     skills: ['Which vector databases does he know?', 'Does he know cloud platforms?'],
     projects: ['How does the RAG system reduce hallucinations?', 'Which projects have a live demo?'],
@@ -70,6 +70,8 @@ const SYNONYMS = {
     agentic: ['agent'], email: ['contact', 'email'], mail: ['email'], reach: ['contact', 'email'], contact: ['email', 'linkedin'],
     github: ['code'], code: ['github'], demo: ['live', 'demo'], blog: ['writing', 'post'], article: ['post', 'writing'], wrote: ['writing'],
     award: ['achievement', 'kaggle', 'rank'], achievement: ['award', 'rank'], competition: ['kaggle'], rank: ['percentile', 'rank'],
+    build: ['built', 'develop', 'engineer'], built: ['develop', 'engineer'], make: ['built', 'develop'], made: ['built', 'develop'],
+    healthcare: ['clinical', 'medical'], medical: ['clinical'], health: ['clinical', 'medical'], sql: ['postgresql', 'text-to-sql'], ocr: ['ocr', 'document'],
     cloud: ['azure', 'aws', 'gcp'], deploy: ['docker', 'deployment', 'production'], mlops: ['mlflow', 'docker'],
     now: ['present', 'currently'], current: ['present', 'currently'], currently: ['present'],
     result: ['reduc', 'improv', 'accuracy'], impact: ['reduc', 'improv', 'saving'], club: ['leadership', 'club'],
@@ -272,7 +274,9 @@ function finalText(element) {
     if (clone.matches && clone.matches('[data-count]')) counters.push(clone);
     counters.forEach(counter => {
         const decimals = parseInt(counter.dataset.decimals || '0', 10);
-        counter.textContent = `${counter.dataset.prefix || ''}${parseFloat(counter.dataset.count).toFixed(decimals)}${counter.dataset.suffix || ''}`;
+        const value = parseFloat(counter.dataset.count);
+        const number = counter.dataset.group ? value.toLocaleString('en-US', { minimumFractionDigits: decimals }) : value.toFixed(decimals);
+        counter.textContent = `${counter.dataset.prefix || ''}${number}${counter.dataset.suffix || ''}`;
     });
     return clone.textContent.replace(/\s+/g, ' ').trim();
 }
@@ -345,6 +349,10 @@ function buildPortfolioCorpus() {
     if (email) {
         push('contact', 'Contact', `The best way to reach Vijay is by email at ${email.textContent.trim()}. He is also on LinkedIn, GitHub and a Data Science Portfolio.`,
             () => document.querySelector('#contact .contact-side'), 'email contact reach linkedin github');
+    }
+    if (window.portfolioResumeUrl) {
+        push('contact', 'Résumé', "Vijay's resume (CV) is available as a PDF download from the hero and contact sections.",
+            () => document.querySelector('#contact [data-resume]'), 'resume cv pdf download');
     }
 
     // Blog posts (from data; the article DOM is rendered on demand)

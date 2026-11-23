@@ -6,12 +6,12 @@
             dates: 'Sept 2025 – Present',
             start: [2025, 9],
             end: null,
-            stack: 'LLMs · RAG · Agents · Azure · Docker',
+            stack: 'LangGraph · RAG · PostgreSQL · OCR · FastAPI · Azure Functions · Microsoft Fabric',
             points: [
-                'Built and scaled a secure <strong>Data-as-a-Platform</strong> architecture with RBAC, API security, microservices, and cloud-native pipelines, reducing processing latency by <strong>24%</strong> and improving reliability by <strong>18%</strong>.',
-                'Developed AI-powered agentic workflows and automation systems, saving approximately <strong>40-45 hours weekly</strong> through intelligent orchestration and async processing.',
-                'Engineered financial-domain chatbot solutions using LLMs, RAG pipelines, and vector search, reducing manual workload by <strong>44%</strong>.',
-                'Designed scalable production systems using <strong>Azure cloud services</strong>, Docker, CI/CD, caching, and monitoring for high-availability deployments.'
+                'Developed enterprise <strong>RAG-based conversational AI systems</strong> integrating PostgreSQL and LLMs for natural-language querying across structured financial datasets.',
+                'Built <strong>multi-agent AI workflows</strong> using LangGraph, implementing fan-out architecture supporting <strong>10 parallel model calls</strong> with model routing and response evaluation.',
+                'Developed an AI-powered <strong>Clinical Case Review system</strong> for analyzing medical records spanning <strong>1,000+ pages</strong>, incorporating OCR, multilingual translation, and LLM-based analysis.',
+                'Engineered <strong>4+ enterprise automation integrations</strong> using FastAPI, Azure Functions, Microsoft Fabric, Graph API, and SharePoint for data processing, reporting, and workflow automation.'
             ]
         },
         {
@@ -65,7 +65,7 @@
     const nowPct = nowMonth / totalMonths * 100;
 
     const lanes = [
-        { label: 'B.Tech, Nirma University', start: [2021, 8], end: [2025, 5], kind: 'study' },
+        { label: 'B.Tech, Nirma University', start: [2021, 11], end: [2025, 6], kind: 'study' },
         ...roles.slice().reverse().map(item => ({ label: item.company, start: item.start, end: item.end, kind: 'work' }))
     ];
 
@@ -120,7 +120,7 @@
         <header class="sec-head">
             <span class="sec-idx">02</span>
             <h2 class="sec-title">Experience</h2>
-            <p class="sec-sub">Four roles across finance AI, industrial vision, web platforms and data science.</p>
+            <p class="sec-sub">Four roles across enterprise AI, industrial vision, web platforms and data science.</p>
         </header>
         ${timeline}
         <div class="roles">${entries}</div>

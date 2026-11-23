@@ -50,6 +50,7 @@ function renderBlogContent(blocks) {
     return blocks.map(block => {
         if (block.type === 'heading') return `<h2 class="blog-subheading">${escapeBlogText(block.text)}</h2>`;
         if (block.type === 'list') return `<ul class="blog-list-items">${block.items.map(item => `<li>${escapeBlogText(item)}</li>`).join('')}</ul>`;
+        if (block.type === 'figure') return `<figure class="fig blog-interactive fig-${escapeBlogText(block.name)}" data-figure="${escapeBlogText(block.name)}" data-fig-num="Interactive" data-fig-title="${escapeBlogText(block.caption)}"></figure>`;
         if (block.type === 'callout') return `<blockquote class="blog-callout">${escapeBlogText(block.text)}</blockquote>`;
         if (block.type === 'image') {
             const imageUrl = new URL(block.src, window.portfolioAssetBaseUrl).href;

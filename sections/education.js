@@ -17,7 +17,7 @@ registerSection('education', `
             <span class="row-date">2019 – 2021</span>
             <div class="row-body">
                 <h3 class="row-title">Higher Secondary (12th Grade)</h3>
-                <p class="row-sub">P.P. Savani Vidhyamandir</p>
+                <p class="row-sub">P.P. Savani Vidhyamandir, Surat</p>
                 <p>Focus: Science (Physics, Chemistry, Mathematics).</p>
             </div>
             <span class="row-metric"><b>92.3%</b></span>

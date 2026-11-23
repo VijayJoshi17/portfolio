@@ -45,6 +45,7 @@ window.registerBlog({
             type: 'paragraph',
             text: 'If λ is high, the retriever behaves more like standard similarity search. If λ is lower, the retriever penalizes candidates that are too similar to what is already in the set, encouraging broader coverage. This makes MMR especially useful for retrieval in RAG pipelines where the final answer must synthesize different evidence rather than echo a single narrow source.'
         },
+        { type: 'figure', name: 'mmr', caption: 'Move the query, then lower λ and watch the picks spread out' },
         { type: 'heading', text: 'Why MMR matters for RAG' },
         {
             type: 'list',

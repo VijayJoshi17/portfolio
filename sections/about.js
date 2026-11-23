@@ -10,37 +10,14 @@ registerSection('about', `
             <p class="lede">I work across the stack of applied AI: the retrieval that finds the right context, the agents that reason over it, the vision models that read the physical world, and the infrastructure that keeps all of it fast and correct in production.</p>
             <div class="hero-actions">
                 <a class="btn-primary" href="mailto:joshivijay2004@gmail.com">Write to me</a>
+                <a class="ulink" data-resume hidden download="Vijay_Joshi_Resume.pdf">Résumé ↓</a>
                 <a class="ulink" href="https://github.com/VijayJoshi17" target="_blank" rel="noopener noreferrer">GitHub</a>
                 <a class="ulink" href="https://www.linkedin.com/in/vijay-joshi-4b5474244/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
                 <a class="ulink" href="https://www.datascienceportfol.io/VijayJoshi" target="_blank" rel="noopener noreferrer">DS Portfolio</a>
             </div>
         </div>
 
-        <figure class="fig fig-mmr" id="mmrFig">
-            <div class="mmr-stage">
-                <canvas id="mmrCanvas" role="img" aria-label="Interactive figure: a field of characters shows how similar each point of a toy embedding space is to a query. Five documents are selected by either top-k similarity or maximal marginal relevance."></canvas>
-                <span class="mmr-hint" id="mmrHint" aria-hidden="true">click or drag to move the query</span>
-            </div>
-            <figcaption class="fig-caption">
-                <div class="fig-head">
-                    <span class="fig-num">Fig. 1</span>
-                    <span class="fig-title">Retrieval in a toy embedding space</span>
-                </div>
-                <div class="mmr-controls">
-                    <div class="seg-toggle" role="group" aria-label="Selection strategy">
-                        <button type="button" data-mmr-mode="sim" aria-pressed="false">Top-k similarity</button>
-                        <button type="button" data-mmr-mode="mmr" aria-pressed="true">MMR</button>
-                    </div>
-                    <label class="mmr-lambda">
-                        <span>λ</span>
-                        <input type="range" id="mmrLambda" min="0" max="1" step="0.05" value="0.5" aria-label="MMR lambda: relevance versus diversity">
-                        <output id="mmrLambdaOut">0.50</output>
-                    </label>
-                </div>
-                <div class="mmr-readout" id="mmrReadout" aria-live="polite"></div>
-                <p class="fig-note">Each glyph is the query's similarity at that point. Top-k grabs the near-duplicates; MMR trades a little relevance for coverage. <a class="ulink" href="./blogs/mmr-maximum-marginal-relevance" data-route="blogs/mmr-maximum-marginal-relevance">Read the post →</a></p>
-            </figcaption>
-        </figure>
+        <figure class="fig fig-mmr" id="mmrFig" data-figure="mmr" data-fig-num="Fig. 1" data-fig-title="Retrieval in a toy embedding space" data-fig-link="blogs/mmr-maximum-marginal-relevance"></figure>
     </div>
 
     <div class="marquee" aria-hidden="true">
@@ -58,11 +35,11 @@ registerSection('about', `
         <div class="about-body reveal">
             <img src="images/profile.png" alt="Portrait of Vijay Joshi" class="portrait" width="112" height="112">
             <p class="big-text">I'm an AI engineer who likes the unglamorous parts: retrieval that actually finds the right paragraph, agents that know when to stop, and latency budgets measured in milliseconds.</p>
-            <p>I have shipped LLM and RAG systems for finance, real-time computer-vision pipelines for industrial inspection, and the cloud plumbing that keeps them running. I'm currently building intelligent systems at <strong>AIVantage</strong>.</p>
+            <p>I have shipped LLM, RAG and multi-agent systems for finance and healthcare, real-time computer-vision pipelines for industrial inspection, and the cloud plumbing that keeps them running. I'm currently building intelligent systems at <strong>AIVantage</strong>.</p>
             <div class="stats">
-                <div class="stat reveal"><span class="stat-num" data-count="24" data-suffix="%">24%</span><span class="stat-label">lower processing latency on a data platform</span></div>
-                <div class="stat reveal"><span class="stat-num" data-count="45" data-prefix="~" data-suffix="h">~45h</span><span class="stat-label">saved weekly through agentic automation</span></div>
-                <div class="stat reveal"><span class="stat-num" data-count="44" data-suffix="%">44%</span><span class="stat-label">less manual work with a finance RAG chatbot</span></div>
+                <div class="stat reveal"><span class="stat-num" data-count="10">10</span><span class="stat-label">parallel model calls in a LangGraph fan-out workflow</span></div>
+                <div class="stat reveal"><span class="stat-num" data-count="1000" data-group="true" data-suffix="+">1,000+</span><span class="stat-label">page medical records analysed by a clinical review system</span></div>
+                <div class="stat reveal"><span class="stat-num" data-count="4" data-suffix="+">4+</span><span class="stat-label">enterprise automation integrations on Azure and Fabric</span></div>
                 <div class="stat reveal"><span class="stat-num" data-count="10" data-prefix="&lt;" data-suffix="ms">&lt;10ms</span><span class="stat-label">frame latency in real-time vision systems</span></div>
             </div>
         </div>
